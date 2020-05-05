@@ -1,0 +1,2 @@
+E:\unityProjects\Pigeon Life\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+E:\unityProjects\Pigeon Life\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
