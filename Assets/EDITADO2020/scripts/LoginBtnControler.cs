@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LoginBtnControler : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class LoginBtnControler : MonoBehaviour
     //public float downTime = 0.1f;
     public GameStates stateManager = null;
     private DataBase databaseAcces;
+    public Sprite Image1;
+    public Sprite Image2;
+    public Button v_boton;
+    private int counter = 0;
     /*private Boton botonAcces;
     private enum buttonStates
     {
@@ -19,6 +24,7 @@ public class LoginBtnControler : MonoBehaviour
     private float nextStateTime = 0.0f;*/
     void Start()
     {
+        //v_boton = GetComponent<Button>();
         databaseAcces = GameObject.FindGameObjectWithTag("DatabaseAccess").GetComponent<DataBase>();
         /*botonAcces = GameObject.FindGameObjectWithTag("DatabaseAccess").GetComponent<Boton>();
         upSprite.SetActive(true);
@@ -60,7 +66,17 @@ public class LoginBtnControler : MonoBehaviour
 
     public void LoginScreenMethod()
     {
-        stateManager.loginGame();
+        counter++;
+        if (counter % 2 == 0)
+        {
+            //v_boton.image.overrideSprite = Image1;
+            stateManager.TitleGame();
+        }
+        else
+        {
+            //v_boton.image.overrideSprite = Image2;
+            stateManager.loginGame();
+        }
     }
     public void RankingScreenMethod()
     {

@@ -19,14 +19,21 @@ public class DataBase : MonoBehaviour
     public GameObject inputFieldpasswordLogin;
     public Transform contentPanel;
     public TextMeshProUGUI textDisplayLogin;
+    public TextMeshProUGUI textDisplayUsuarioLoginOK;
+    public TextMeshProUGUI textDisplayCrearCuenta;
     public GameStates stateManager = null;
     public Button prefabBoton;
     public GameObject BtnLogout;
+    public GameObject BtnLogin;
+    public GameObject BtnRegister;
     public TextMesh recordMesh;
     public String usuarioSave = "unknown";
     public String passwordSave = "";
     public int recordSave = 0;
-    MongoClient client = new MongoClient("mongodb+srv://daniel:***password****@cluster0-561u6.mongodb.net/test?retryWrites=true&w=majority");
+    public Sprite Image1Login;
+    public Sprite Image2Login;
+    public Button v_boton_loginUI;
+    MongoClient client = new MongoClient("mongodb+srv://daniel:***password***@cluster0-561u6.mongodb.net/test?retryWrites=true&w=majority");
     
     IMongoDatabase database;
     IMongoCollection<BsonDocument> v_RankingCollection;
@@ -41,8 +48,33 @@ public class DataBase : MonoBehaviour
         {
             Debug.Log(data.username+" rank: "+ data.ranking);
             usuarioSave = data.username;
-            recordSave = data.ranking;            
+            recordSave = data.ranking;
+
+            if (usuarioSave == "unknown")
+            {
+                BtnLogout.active = false;
+                textDisplayUsuarioLoginOK.enabled = false;
+                v_boton_loginUI.image.overrideSprite = Image1Login;
+            }
+            else
+            {
+                inputFieldpasswordLogin.active = false;
+                inputFieldUserLoginParent.active = false;
+                BtnLogin.active = false;
+                textDisplayCrearCuenta.enabled = false;
+                BtnRegister.active = false;
+                textDisplayLogin.enabled=false;
+                v_boton_loginUI.image.overrideSprite = Image2Login;
+                textDisplayUsuarioLoginOK.text = "Bienvenido " + usuarioSave;
+            }
         }
+        else
+        {
+            BtnLogout.active = false;
+            textDisplayUsuarioLoginOK.enabled = false;
+        }
+
+
         StartCoroutine(RunLaterCoroutine(2));
 
 
@@ -156,13 +188,22 @@ public class DataBase : MonoBehaviour
                     var update = Builders<BsonDocument>.Update.Set("online", true);
                     v_usuariosCollection.UpdateOneAsync(filter, update);
                     Debug.Log("Login correcto");
-                    textDisplayLogin.text = "Login correcto";
+                    textDisplayLogin.text = "";
+                    textDisplayUsuarioLoginOK.text = "Bienvenido " + usuarioSave;
                     inputFieldUserLogin.GetComponent<Text>().text = "";
                     inputFieldpasswordLogin.GetComponent<InputField>().text = "";
                     SaveDataToFileAndMongo(0);
                     inputFieldpasswordLogin.active = false;
                     inputFieldUserLoginParent.active = false;
                     BtnLogout.active = true;
+                    textDisplayUsuarioLoginOK.enabled = true;
+                    BtnLogin.active = false;
+                    textDisplayCrearCuenta.enabled = false;
+                    BtnRegister.active = false;
+                    textDisplayLogin.enabled = false;
+                    v_boton_loginUI.image.overrideSprite = Image2Login;
+
+
 
                     //inputFieldpasswordLogin.SetActive(false);
                     //passwordSave = inputFieldpasswordLogin.GetComponent<InputField>().text;
@@ -186,7 +227,17 @@ public class DataBase : MonoBehaviour
 
      public async void LogoutUsuario()
     {
-
+        usuarioSave = "unknown";
+        v_boton_loginUI.image.overrideSprite = Image1Login;
+        SaveDataToFileAndMongo(0);
+        inputFieldpasswordLogin.active = true;
+        inputFieldUserLoginParent.active = true;
+        BtnLogout.active = false;
+        textDisplayUsuarioLoginOK.enabled = false;
+        BtnLogin.active = true;
+        textDisplayCrearCuenta.enabled = true;
+        BtnRegister.active = true;
+        textDisplayLogin.enabled = true;
     }
     
 
@@ -195,6 +246,14 @@ public class DataBase : MonoBehaviour
     {
         recordSave = lvl;
         SaveSystem.SavePlayer(new Player(recordSave, usuarioSave));
+        if (recordSave == 0)
+        {
+            recordMesh.text = "";
+        }
+        else
+        {
+            recordMesh.text = "Récord: lvl " + recordSave;
+        }
         //mongo   
         Debug.Log("subiendo a mongo...");
         var filter = Builders<BsonDocument>.Filter.Eq("username", usuarioSave);
@@ -232,6 +291,8 @@ public class DataBase : MonoBehaviour
 
     public async void PonerListaRanking()
     {
+
+        inputFieldUserLogin.GetComponent<Text>().text = "";
         //delete
         //v_RankingCollection.DeleteManyAsync(new BsonDocument());
         //insert multiple
